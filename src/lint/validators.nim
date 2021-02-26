@@ -27,7 +27,7 @@ template checkString*(key: string, isRequired = true) =
         writeError("String is zero-length: " & q(key), path)
       elif s.strip().len == 0:
         writeError("String is whitespace-only: " & q(key), path)
-    else:
+    elif data[key].kind != JNull or isRequired:
       writeError("Not a string: " & q(key) & ": " & $data[key], path)
   elif isRequired:
     writeError("Missing key: " & q(key), path)
@@ -55,7 +55,7 @@ template checkArrayOfStrings*(context, key: string; isRequired = true) =
               writeError("Array contains whitespace-only string: " & q(key), path)
           else:
             writeError("Array contains non-string: " & format(context, key) & ": " & $item, path)
-    else:
+    elif d[key].kind != JNull or isRequired:
       writeError("Not an array: " & format(context, key), path)
   elif isRequired:
     writeError("Missing key: " & format(context, key), path)
@@ -72,21 +72,25 @@ template checkArrayOf*(key: string,
         for item in data[key]:
           if not call(item, key, path):
             result = false
-    else:
+    elif data[key].kind != JNull or isRequired:
       writeError("Not an array: " & q(key), path)
   elif isRequired:
     writeError("Missing key: " & q(key), path)
 
 template checkBoolean*(key: string, isRequired = true) =
   if data.hasKey(key):
-    if data[key].kind != JBool:
+    if data[key].kind == JBool:
+      return
+    elif data[key].kind != JNull or isRequired:
       writeError("Not a bool: " & q(key) & ": " & $data[key], path)
   elif isRequired:
     writeError("Missing key: " & q(key), path)
 
 template checkInteger*(key: string, isRequired = true) =
-  if data.hasKey(key):
-    if data[key].kind != JInt:
+  if data.hasKey(key):    
+    if data[key].kind == JInt:
+      return
+    elif data[key].kind != JNull or isRequired:
       writeError("Not an integer: " & q(key) & ": " & $data[key], path)
   elif isRequired:
     writeError("Missing key: " & q(key), path)
