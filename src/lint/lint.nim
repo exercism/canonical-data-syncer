@@ -30,6 +30,18 @@ proc conceptExerciseFilesExist(trackDir: string): bool =
   let conceptDir = trackDir / "exercises" / "concept"
   result = subdirsContain(conceptDir, conceptExerciseFiles)
 
+proc practiceExerciseFilesExist(trackDir: string): bool =
+  ## Returns true if every subdirectory in `trackDir/exercises/practice` has the
+  ## required files.
+  const
+    requiredPracticeExerciseFiles = [
+      ".docs" / "instructions.md",
+      ".meta" / "config.json",
+    ]
+
+  let practiceExercisesDir = trackDir / "exercises" / "practice"
+  result = subdirsContain(practiceExercisesDir, requiredPracticeExerciseFiles)
+
 proc conceptFilesExist(trackDir: string): bool =
   ## Returns true if every subdirectory in `trackDir/concepts` has the required
   ## files.
@@ -51,11 +63,12 @@ proc lint*(conf: Conf) =
   let trackDir = conf.trackDir
   let b1 = isTrackConfigValid(trackDir)
   let b2 = conceptExerciseFilesExist(trackDir)
-  let b3 = conceptFilesExist(trackDir)
-  let b4 = isEveryConceptExerciseConfigValid(trackDir)
-  let b5 = isEveryPracticeExerciseConfigValid(trackDir)
+  let b3 = practiceExerciseFilesExist(trackDir)
+  let b4 = conceptFilesExist(trackDir)
+  let b5 = isEveryConceptExerciseConfigValid(trackDir)
+  let b6 = isEveryPracticeExerciseConfigValid(trackDir)
 
-  if b1 and b2 and b3 and b4 and b5:
+  if b1 and b2 and b3 and b4 and b5 and b6:
     echo """
 Basic linting finished successfully:
 - config.json exists and is valid JSON
@@ -63,6 +76,7 @@ Basic linting finished successfully:
 - Every concept has the required .md files and links.json file
 - Every concept exercise has the required .md files and a .meta/config.json file
 - Every concept exercise .meta/config.json file is valid
+- Every practice exercise has the required .md files and a .meta/config.json file
 - Every practice exercise .meta/config.json file is valid"""
   else:
     quit(1)
