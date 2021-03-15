@@ -1,6 +1,6 @@
 import std/os
 import ".."/[cli, helpers]
-import "."/[concept_exercises, track_config]
+import "."/[concept_exercises, practice_exercises, track_config]
 
 proc subdirsContain(dir: string, files: openArray[string]): bool =
   ## Returns `true` if every file in `files` exists in every subdirectory of
@@ -53,14 +53,16 @@ proc lint*(conf: Conf) =
   let b2 = conceptExerciseFilesExist(trackDir)
   let b3 = conceptFilesExist(trackDir)
   let b4 = isEveryConceptExerciseConfigValid(trackDir)
+  let b5 = isEveryPracticeExerciseConfigValid(trackDir)
 
-  if b1 and b2 and b3 and b4:
+  if b1 and b2 and b3 and b4 and b5:
     echo """
 Basic linting finished successfully:
 - config.json exists and is valid JSON
 - config.json has these valid fields: language, slug, active, blurb, version, tags
 - Every concept has the required .md files and links.json file
 - Every concept exercise has the required .md files and a .meta/config.json file
-- Every concept exercise .meta/config.json file is valid"""
+- Every concept exercise .meta/config.json file is valid
+- Every practice exercise .meta/config.json file is valid"""
   else:
     quit(1)
